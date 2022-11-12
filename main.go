@@ -194,7 +194,8 @@ func (f *Fixer) Fix(target *Target) {
 			if v, ok := fmtArg.(*ast.BasicLit); ok && v.Kind == token.STRING {
 				fmtArg = &ast.BasicLit{ValuePos: v.Pos(), Kind: v.Kind, Value: strconv.Quote(strings.Trim(v.Value, "- \"") + " -- %w")}
 			} else {
-				fmtArg = &ast.BinaryExpr{X: v, OpPos: v.Pos(), Op: token.ADD, Y: &ast.BasicLit{ValuePos: v.Pos(), Kind: token.STRING, Value: " -- %w"}}
+				v := fmtArg
+				fmtArg = &ast.BinaryExpr{X: v, OpPos: v.Pos(), Op: token.ADD, Y: &ast.BasicLit{ValuePos: v.Pos(), Kind: token.STRING, Value: strconv.Quote(" -- %w")}}
 			}
 
 			args := make([]ast.Expr, 0, len(call.expr.Args)+1)

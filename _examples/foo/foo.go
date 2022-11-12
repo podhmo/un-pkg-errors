@@ -36,3 +36,10 @@ func NeverChanges() error {
 	}
 	return nil
 }
+
+func WithSprintf() error {
+	if err := Bar(); err != nil {
+		return errors.Wrap(err, fmt.Sprintf("error message with sprintf %d", 0))
+	}
+	return nil
+}

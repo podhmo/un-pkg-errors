@@ -1,5 +1,5 @@
---- _examples/foo/foo.go	2022-11-12 19:59:45.756182851 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-12 20:02:52.036180225 +0900
+--- _examples/foo/foo.go	2022-11-12 20:15:28.666169563 +0900
++++ _examples/foo_transformed/foo.go	2022-11-12 20:21:21.526164590 +0900
 @@ -2,20 +2,18 @@
  
  import (
@@ -32,3 +32,14 @@
  	}
  	return true, nil
  }
+@@ -39,7 +37,7 @@
+ 
+ func WithSprintf() error {
+ 	if err := Bar(); err != nil {
+-		return errors.Wrap(err, fmt.Sprintf("error message with sprintf %d", 0))
++		return fmt.Errorf(fmt.Sprintf("error message with sprintf %d", 0)+" -- %w", err)
+ 	}
+ 	return nil
+-}
+\ No newline at end of file
++}
