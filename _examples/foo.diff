@@ -1,0 +1,34 @@
+--- _examples/foo/foo.go	2022-11-12 19:59:45.756182851 +0900
++++ _examples/foo_transformed/foo.go	2022-11-12 20:02:52.036180225 +0900
+@@ -2,20 +2,18 @@
+ 
+ import (
+ 	"fmt"
+-
+-	"github.com/pkg/errors"
+ )
+ 
+ func Foo() error {
+ 	if err := Bar(); err != nil {
+-		return errors.Wrap(err, "foo --")
++		return fmt.Errorf("foo -- %w", err)
+ 	}
+ 	return nil
+ }
+ 
+ func Bar() error {
+ 	if err := Boo(); err != nil {
+-		return errors.Wrapf(err, "on %s%d", "bar", 0)
++		return fmt.Errorf("on %s%d -- %w", "bar", 0, err)
+ 	}
+ 	return nil
+ }
+@@ -25,7 +23,7 @@
+ 
+ func Multiples() (bool, error) {
+ 	if err := Bar(); err != nil {
+-		return false, errors.Wrap(err, "multiples")
++		return false, fmt.Errorf("multiples -- %w", err)
+ 	}
+ 	return true, nil
+ }
