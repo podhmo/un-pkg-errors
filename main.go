@@ -83,6 +83,9 @@ func run(config Config, files []string) error {
 			if err := FprintTree(wf, fset, filename, t.syntax); err != nil {
 				return err
 			}
+			if err := os.Rename(wf.Name(), filename); err != nil {
+				return fmt.Errorf("mv file: %s -> %s, -- %w", wf.Name(), filename, err)
+			}
 		} else if !config.quiet {
 			if err := FprintTree(os.Stdout, fset, filename, t.syntax); err != nil {
 				return err
