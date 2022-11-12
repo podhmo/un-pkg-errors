@@ -1,16 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"golang.org/x/tools/imports"
 )
 
 // go run main.go -replace $(git grep -l -P 'errors\.Wrapf?\(')
@@ -70,28 +74,43 @@ func run(config Config, files []string) error {
 		}
 		fixer.Fix(t)
 
-		// TODO: use goimports?
-
 		if config.replace {
-			wf, err := os.CreateTemp(config.tmpdir, "*.go")
 			log.Printf("%-6s %s", "write:", filename)
+			wf, err := os.CreateTemp(config.tmpdir, "*.go")
 			if err != nil {
 				return fmt.Errorf("create file: %s, -- %w", filename, err)
 			}
-			if err := printer.Fprint(wf, fset, t.syntax); err != nil {
-				return fmt.Errorf("emit file: %s, -- %w", filename, err)
-			}
-			if err := wf.Close(); err != nil { // xxx: use defer?
-				return fmt.Errorf("emit file..: %s, -- %w", filename, err)
-			}
-			if err := os.Rename(wf.Name(), filename); err != nil {
-				return fmt.Errorf("create file..: %s, -- %w", filename, err)
+			if err := FprintTree(wf, fset, filename, t.syntax); err != nil {
+				return err
 			}
 		} else if !config.quiet {
-			if err := printer.Fprint(os.Stdout, fset, t.syntax); err != nil {
-				return fmt.Errorf("emit file: %s, -- %w", filename, err)
+			if err := FprintTree(os.Stdout, fset, filename, t.syntax); err != nil {
+				return err
 			}
 		}
+	}
+	return nil
+}
+
+func FprintTree(w io.Writer, fset *token.FileSet, filename string, tree ast.Node) (retErr error) {
+	if t, ok := w.(io.Closer); ok {
+		defer func() {
+			if err := t.Close(); err != nil {
+				retErr = fmt.Errorf("close file....: %s, -- %w", filename, err)
+			}
+		}()
+	}
+
+	buf := new(bytes.Buffer)
+	if err := printer.Fprint(buf, fset, tree); err != nil {
+		return fmt.Errorf("format file: %s, -- %w", filename, err)
+	}
+	code, err := imports.Process(filename, buf.Bytes(), nil)
+	if err != nil {
+		return fmt.Errorf("format file..: %s, -- %w", filename, err)
+	}
+	if _, err := w.Write(code); err != nil {
+		return fmt.Errorf("emit file..: %s, -- %w", filename, err)
 	}
 	return nil
 }
