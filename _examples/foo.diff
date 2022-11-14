@@ -1,5 +1,5 @@
---- _examples/foo/foo.go	2022-11-14 11:25:15.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 11:25:26.000000000 +0900
+--- _examples/foo/foo.go	2022-11-14 11:30:38.000000000 +0900
++++ _examples/foo_transformed/foo.go	2022-11-14 11:30:49.000000000 +0900
 @@ -8,14 +8,14 @@
  
  func Foo() error {
@@ -26,7 +26,36 @@
  	}
  	return true, nil
  }
-@@ -39,7 +39,7 @@
+@@ -42,24 +42,24 @@
+ 		fmt.Println("hmm")
+ 		return err
+ 	}
+-	return newXXXError(errors.Wrap(Boo(), "hmm"))
++	return newXXXError(fmt.Errorf("hmm -- %w", Boo()))
+ }
+ func Paren() error {
+ 	if err := Boo(); err != nil {
+-		return (errors.Wrapf(err, "on %s%d", "bar", 0))
++		return (fmt.Errorf("on %s%d -- %w", "bar", 0, err))
+ 	}
+ 	return nil
+ }
+ func Assign() error {
+ 	if err := Boo(); err != nil {
+-		err = errors.Wrapf(err, "on %s%d", "bar", 0)
++		err = fmt.Errorf("on %s%d -- %w", "bar", 0, err)
+ 		return err
+ 	}
+ 	return nil
+ }
+ func Assign2() error {
+ 	if err := Boo(); err != nil {
+-		err2 := errors.Wrapf(err, "on %s%d", "bar", 0)
++		err2 := fmt.Errorf("on %s%d -- %w", "bar", 0, err)
+ 		return err2
+ 	}
+ 	return nil
+@@ -67,39 +67,39 @@
  
  func WithSprintf() error {
  	if err := Bar(); err != nil {
@@ -34,13 +63,6 @@
 +		return fmt.Errorf(fmt.Sprintf("error message with sprintf %d", 0)+" -- %w", err)
  	}
  	return nil
- }
-@@ -49,37 +49,37 @@
- 		fmt.Println("hmm")
- 		return err
- 	}
--	return newXXXError(errors.Wrap(Boo(), "hmm"))
-+	return newXXXError(fmt.Errorf("hmm -- %w", Boo()))
  }
  
  func WithWithMessage() error {

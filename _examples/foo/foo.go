@@ -37,19 +37,39 @@ func NeverChanges() error {
 	return nil
 }
 
-func WithSprintf() error {
-	if err := Bar(); err != nil {
-		return errors.Wrap(err, fmt.Sprintf("error message with sprintf %d", 0))
-	}
-	return nil
-}
-
-func WithNewError() error {
+func NewError() error {
 	newXXXError := func(err error) error {
 		fmt.Println("hmm")
 		return err
 	}
 	return newXXXError(errors.Wrap(Boo(), "hmm"))
+}
+func Paren() error {
+	if err := Boo(); err != nil {
+		return (errors.Wrapf(err, "on %s%d", "bar", 0))
+	}
+	return nil
+}
+func Assign() error {
+	if err := Boo(); err != nil {
+		err = errors.Wrapf(err, "on %s%d", "bar", 0)
+		return err
+	}
+	return nil
+}
+func Assign2() error {
+	if err := Boo(); err != nil {
+		err2 := errors.Wrapf(err, "on %s%d", "bar", 0)
+		return err2
+	}
+	return nil
+}
+
+func WithSprintf() error {
+	if err := Bar(); err != nil {
+		return errors.Wrap(err, fmt.Sprintf("error message with sprintf %d", 0))
+	}
+	return nil
 }
 
 func WithWithMessage() error {
