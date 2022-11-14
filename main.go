@@ -17,7 +17,7 @@ import (
 	"golang.org/x/tools/imports"
 )
 
-// go run github.com/podhmo/un-pkg-errors@latest -debug -replace $(git grep -l -P 'errors\.(Wrapf?|WithMessage|WithStack|New|Errorf)\(' | grep -v vendor | grep "\.go$")
+// go run github.com/podhmo/un-pkg-errors@latest -debug -replace $(git grep -l -P 'errors\.(Wrapf?|WithMessage|WithStack|New|Errorf|Is|As)\(' | grep -v vendor | grep "\.go$")
 
 func main() {
 	config := Config{}
