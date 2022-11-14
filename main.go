@@ -151,6 +151,8 @@ func (s *Scanner) Scan(f *ast.File) {
 					}
 
 					switch fun.Sel.Name {
+					case "New":
+						target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: nil}) // xxx
 					case "Wrap", "Wrapf", "WithMessage", "WithMessagef", "WithStack":
 						switch parent := stack[len(stack)-2].(type) {
 						case *ast.ReturnStmt:
@@ -202,6 +204,11 @@ func (f *Fixer) Fix(target *Target) {
 		}
 
 		switch call.name {
+		case "New":
+			// errors.New(...) -> fmt.Errorf(...)
+			fn := call.expr.Fun.(*ast.SelectorExpr)
+			fn.X.(*ast.Ident).Name = "fmt"
+			fn.Sel.Name = "Errorf"
 		case "WithStack":
 			call.set(call.expr.Args[0])
 		case "Wrap", "Wrapf", "WithMessage", "WithMessagef": // errors.Wrap(err, "<...>") -> fmt.Errorf("<...> -- %w", err)

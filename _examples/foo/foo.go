@@ -58,9 +58,19 @@ func WithWithMessage() error {
 	}
 	return nil
 }
+
 func WithWithStack() error {
 	if err := Bar(); err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+var errSuspend = errors.New("suspend")
+
+func WithNew() error {
+	if err := Bar(); err != nil {
+		return errors.WithStack(errSuspend)
+	}
+	return errors.New("hmm")
 }

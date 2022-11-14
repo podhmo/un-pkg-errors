@@ -1,5 +1,5 @@
---- _examples/foo/foo.go	2022-11-14 11:02:17.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 11:06:13.000000000 +0900
+--- _examples/foo/foo.go	2022-11-14 11:09:36.000000000 +0900
++++ _examples/foo_transformed/foo.go	2022-11-14 11:10:59.000000000 +0900
 @@ -2,20 +2,18 @@
  
  import (
@@ -41,7 +41,7 @@
  	}
  	return nil
  }
-@@ -49,18 +47,18 @@
+@@ -49,28 +47,28 @@
  		fmt.Println("hmm")
  		return err
  	}
@@ -56,10 +56,23 @@
  	}
  	return nil
  }
+ 
  func WithWithStack() error {
  	if err := Bar(); err != nil {
 -		return errors.WithStack(err)
 +		return err
  	}
  	return nil
+ }
+ 
+-var errSuspend = errors.New("suspend")
++var errSuspend = fmt.Errorf("suspend")
+ 
+ func WithNew() error {
+ 	if err := Bar(); err != nil {
+-		return errors.WithStack(errSuspend)
++		return errSuspend
+ 	}
+-	return errors.New("hmm")
++	return fmt.Errorf("hmm")
  }
