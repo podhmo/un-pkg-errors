@@ -1,4 +1,4 @@
-package internal
+package foo
 
 import (
 	"fmt"
@@ -64,7 +64,7 @@ func Assign2() error {
 }
 func Call() error {
 	if err := Boo(); err != nil {
-		fmt.Printtf("!!%sn", fmt.Errorf("on %s%d -- %w", "bar", 0, err).Error())
+		fmt.Printf("!!%sn", fmt.Errorf("on %s%d -- %w", "bar", 0, err).Error())
 		return nil
 	}
 	return nil

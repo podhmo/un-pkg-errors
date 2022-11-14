@@ -151,7 +151,12 @@ func (s *Scanner) Scan(f *ast.File) {
 					}
 
 					switch fun.Sel.Name {
-					case "New", "Errorf":
+					case "Is":
+						target.needFixImport = true
+					case "New":
+						target.needFixImport = true
+						target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: nil}) // xxx
+					case "Errorf":
 						target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: nil}) // xxx
 					case "Wrap", "Wrapf", "WithMessage", "WithMessagef", "WithStack":
 						switch parent := stack[len(stack)-2].(type) {
@@ -201,7 +206,7 @@ func (s *Scanner) Scan(f *ast.File) {
 		}
 		return true
 	})
-	target.needFix = len(target.calls) > 0
+	target.needFix = len(target.calls) > 0 || target.needFixImport
 	s.targets = append(s.targets, target)
 }
 
@@ -216,6 +221,13 @@ func (f *Fixer) Fix(target *Target) {
 	syntax := target.syntax
 
 	log.Printf("%-6s %s", "fix:", fset.File(syntax.Pos()).Name())
+	if target.needFixImport {
+		for _, im := range syntax.Imports {
+			if im.Path.Value == `"github.com/pkg/errors"` {
+				im.Path.Value = `"errors"`
+			}
+		}
+	}
 	for _, call := range target.calls {
 		pos := call.expr.Pos()
 		if f.debug {
@@ -224,7 +236,7 @@ func (f *Fixer) Fix(target *Target) {
 
 		switch call.name {
 		case "New", "Errorf":
-			// errors.New(...) -> fmt.Errorf(...)
+			// errors.New(...) -> fmt.Errorf(...) // prevent using pkg/errors.New() with goimports
 			// errors.Errorf(...) -> fmt.Errorf(...)
 			fn := call.expr.Fun.(*ast.SelectorExpr)
 			fn.X.(*ast.Ident).Name = "fmt"
@@ -260,7 +272,8 @@ type Target struct {
 	syntax *ast.File
 	calls  []*call
 
-	needFix bool
+	needFix       bool
+	needFixImport bool
 }
 type call struct {
 	name string

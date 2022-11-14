@@ -1,5 +1,5 @@
---- _examples/foo/foo.go	2022-11-14 11:46:04.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 11:47:20.000000000 +0900
+--- _examples/foo/foo.go	2022-11-14 11:59:06.000000000 +0900
++++ _examples/foo_transformed/foo.go	2022-11-14 12:13:59.000000000 +0900
 @@ -2,20 +2,18 @@
  
  import (
@@ -64,8 +64,8 @@
  }
  func Call() error {
  	if err := Boo(); err != nil {
--		fmt.Printtf("!!%sn", errors.Wrapf(err, "on %s%d", "bar", 0).Error())
-+		fmt.Printtf("!!%sn", fmt.Errorf("on %s%d -- %w", "bar", 0, err).Error())
+-		fmt.Printf("!!%sn", errors.Wrapf(err, "on %s%d", "bar", 0).Error())
++		fmt.Printf("!!%sn", fmt.Errorf("on %s%d -- %w", "bar", 0, err).Error())
  		return nil
  	}
  	return nil
