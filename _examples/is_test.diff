@@ -1,7 +1,7 @@
---- _examples/foo/is_test.go	2022-11-14 12:02:57.000000000 +0900
-+++ _examples/foo_transformed/is_test.go	2022-11-14 12:14:00.000000000 +0900
-@@ -4,7 +4,7 @@
- 	"fmt"
+--- _examples/foo/is_test.go	2022-11-14 12:30:12.000000000 +0900
++++ _examples/foo_transformed/is_test.go	2022-11-14 12:30:18.000000000 +0900
+@@ -5,7 +5,7 @@
+ 	"strings"
  	"testing"
  
 -	"github.com/pkg/errors"
@@ -9,7 +9,7 @@
  )
  
  func TestIs(t *testing.T) {
-@@ -12,7 +12,7 @@
+@@ -13,7 +13,7 @@
  	if want, got := xxx, xxx; !errors.Is(got, want) {
  		t.Errorf("unexpected: %v != %v", want, got)
  	}
@@ -18,3 +18,32 @@
  		t.Errorf("unexpected: %v != %v", want, got)
  	}
  
+@@ -28,7 +28,7 @@
+ 	errs := ([]error)(es)
+ 	xs := make([]string, len(errs))
+ 	for i, err := range errs {
+-			xs[i] = err.Error()
++		xs[i] = err.Error()
+ 	}
+ 	return fmt.Sprintf("multi error %s", strings.Join(xs, "\n"))
+ }
+@@ -37,8 +37,8 @@
+ 	t.Run("ok", func(t *testing.T) {
+ 		oops := func() error {
+ 			return MultiError([]error{
+-				errors.New("oyoyo"),
+-				errors.Errorf("hmm %d", 0),
++				fmt.Errorf("oyoyo"),
++				fmt.Errorf("hmm %d", 0),
+ 			})
+ 		}
+ 		var want MultiError
+@@ -48,7 +48,7 @@
+ 	})
+ 	t.Run("ng", func(t *testing.T) {
+ 		oops := func() error {
+-			return errors.New("oyoyo")
++			return fmt.Errorf("oyoyo")
+ 		}
+ 		var want MultiError
+ 		if got := oops(); errors.As(got, &want) {

@@ -151,7 +151,7 @@ func (s *Scanner) Scan(f *ast.File) {
 					}
 
 					switch fun.Sel.Name {
-					case "Is":
+					case "Is", "As":
 						target.needFixImport = true
 					case "New":
 						target.needFixImport = true
