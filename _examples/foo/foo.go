@@ -64,6 +64,13 @@ func Assign2() error {
 	}
 	return nil
 }
+func Call() error {
+	if err := Boo(); err != nil {
+		fmt.Printtf("!!%sn", errors.Wrapf(err, "on %s%d", "bar", 0).Error())
+		return nil
+	}
+	return nil
+}
 
 func WithSprintf() error {
 	if err := Bar(); err != nil {

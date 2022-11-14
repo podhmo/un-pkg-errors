@@ -187,6 +187,11 @@ func (s *Scanner) Scan(f *ast.File) {
 								}
 							}
 							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
+						case *ast.SelectorExpr:
+							set := func(new ast.Expr) {
+								parent.X = new
+							}
+							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
 						default:
 							log.Printf("\tWARNING: unexpected type: %T in %s", parent, fun.Sel.Name)
 						}
