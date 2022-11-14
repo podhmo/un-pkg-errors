@@ -58,3 +58,9 @@ func WithWithMessage() error {
 	}
 	return nil
 }
+func WithWithStack() error {
+	if err := Bar(); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}

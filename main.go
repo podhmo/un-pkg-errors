@@ -151,10 +151,10 @@ func (s *Scanner) Scan(f *ast.File) {
 					}
 
 					switch fun.Sel.Name {
-					case "Wrap", "Wrapf", "WithMessage", "WithMessagef":
+					case "Wrap", "Wrapf", "WithMessage", "WithMessagef", "WithStack":
 						switch parent := stack[len(stack)-2].(type) {
 						case *ast.ReturnStmt:
-							set := func(new *ast.CallExpr) {
+							set := func(new ast.Expr) {
 								for i, x := range parent.Results {
 									if x == n {
 										parent.Results[i] = new
@@ -163,7 +163,7 @@ func (s *Scanner) Scan(f *ast.File) {
 							}
 							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
 						case *ast.CallExpr:
-							set := func(new *ast.CallExpr) {
+							set := func(new ast.Expr) {
 								for i, x := range parent.Args {
 									if x == n {
 										parent.Args[i] = new
@@ -172,7 +172,7 @@ func (s *Scanner) Scan(f *ast.File) {
 							}
 							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
 						default:
-							log.Printf("\tWARNING: unexpected type: %T", parent)
+							log.Printf("\tWARNING: unexpected type: %T in %s", parent, fun.Sel.Name)
 						}
 					}
 				}
@@ -202,6 +202,8 @@ func (f *Fixer) Fix(target *Target) {
 		}
 
 		switch call.name {
+		case "WithStack":
+			call.set(call.expr.Args[0])
 		case "Wrap", "Wrapf", "WithMessage", "WithMessagef": // errors.Wrap(err, "<...>") -> fmt.Errorf("<...> -- %w", err)
 			errArg := call.expr.Args[0]
 			fmtArg := call.expr.Args[1]
@@ -238,5 +240,5 @@ type call struct {
 
 	expr  *ast.CallExpr
 	stack []ast.Node
-	set   func(*ast.CallExpr)
+	set   func(ast.Expr)
 }
