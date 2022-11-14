@@ -1,6 +1,12 @@
 --- _examples/foo/foo.go	2022-11-14 11:30:38.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 11:30:49.000000000 +0900
-@@ -8,14 +8,14 @@
++++ _examples/foo_transformed/foo.go	2022-11-14 11:32:56.000000000 +0900
+@@ -2,20 +2,18 @@
+ 
+ import (
+ 	"fmt"
+-
+-	"github.com/pkg/errors"
+ )
  
  func Foo() error {
  	if err := Bar(); err != nil {
@@ -17,7 +23,7 @@
  	}
  	return nil
  }
-@@ -25,7 +25,7 @@
+@@ -25,7 +23,7 @@
  
  func Multiples() (bool, error) {
  	if err := Bar(); err != nil {
@@ -26,7 +32,7 @@
  	}
  	return true, nil
  }
-@@ -42,24 +42,24 @@
+@@ -42,24 +40,24 @@
  		fmt.Println("hmm")
  		return err
  	}
@@ -55,7 +61,7 @@
  		return err2
  	}
  	return nil
-@@ -67,39 +67,39 @@
+@@ -67,39 +65,39 @@
  
  func WithSprintf() error {
  	if err := Bar(); err != nil {
@@ -93,12 +99,14 @@
 +	return fmt.Errorf("hmm")
  }
  
- var errSuspend2 = errors.Errorf("suspend %d", 2)
+-var errSuspend2 = errors.Errorf("suspend %d", 2)
++var errSuspend2 = fmt.Errorf("suspend %d", 2)
  
  func WithErrorf() error {
  	if err := Bar(); err != nil {
 -		return errors.WithStack(errSuspend)
 +		return errSuspend
  	}
- 	return errors.Errorf("hmm %d", 2)
+-	return errors.Errorf("hmm %d", 2)
++	return fmt.Errorf("hmm %d", 2)
  }
