@@ -43,9 +43,16 @@ func WithSprintf() error {
 }
 
 func WithNewError() error {
-	newXXXError := func(err error) {
+	newXXXError := func(err error) error {
 		fmt.Println("hmm")
 		return err
 	}
 	return newXXXError(fmt.Errorf("hmm -- %w", Boo()))
+}
+
+func WithWithMessage() error {
+	if err := Bar(); err != nil {
+		return fmt.Errorf("multiples -- %w", err)
+	}
+	return nil
 }

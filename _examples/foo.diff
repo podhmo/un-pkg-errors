@@ -1,5 +1,5 @@
---- _examples/foo/foo.go	2022-11-14 10:42:56.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 10:55:42.000000000 +0900
+--- _examples/foo/foo.go	2022-11-14 11:00:46.000000000 +0900
++++ _examples/foo_transformed/foo.go	2022-11-14 11:00:52.000000000 +0900
 @@ -2,20 +2,18 @@
  
  import (
@@ -41,10 +41,18 @@
  	}
  	return nil
  }
-@@ -49,5 +47,5 @@
+@@ -49,12 +47,12 @@
  		fmt.Println("hmm")
  		return err
  	}
 -	return newXXXError(errors.Wrap(Boo(), "hmm"))
 +	return newXXXError(fmt.Errorf("hmm -- %w", Boo()))
+ }
+ 
+ func WithWithMessage() error {
+ 	if err := Bar(); err != nil {
+-		return errors.WithMessage(err, "multiples")
++		return fmt.Errorf("multiples -- %w", err)
+ 	}
+ 	return nil
  }

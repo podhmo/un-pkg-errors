@@ -151,7 +151,7 @@ func (s *Scanner) Scan(f *ast.File) {
 					}
 
 					switch fun.Sel.Name {
-					case "Wrap", "Wrapf":
+					case "Wrap", "Wrapf", "WithMessage", "WithMessagef":
 						switch parent := stack[len(stack)-2].(type) {
 						case *ast.ReturnStmt:
 							set := func(new *ast.CallExpr) {
@@ -202,7 +202,7 @@ func (f *Fixer) Fix(target *Target) {
 		}
 
 		switch call.name {
-		case "Wrap", "Wrapf": // errors.Wrap(err, "<...>") -> fmt.Errorf("<...> -- %w", err)
+		case "Wrap", "Wrapf", "WithMessage", "WithMessagef": // errors.Wrap(err, "<...>") -> fmt.Errorf("<...> -- %w", err)
 			errArg := call.expr.Args[0]
 			fmtArg := call.expr.Args[1]
 
