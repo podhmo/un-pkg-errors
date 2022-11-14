@@ -1,12 +1,6 @@
---- _examples/foo/foo.go	2022-11-14 11:09:36.000000000 +0900
-+++ _examples/foo_transformed/foo.go	2022-11-14 11:10:59.000000000 +0900
-@@ -2,20 +2,18 @@
- 
- import (
- 	"fmt"
--
--	"github.com/pkg/errors"
- )
+--- _examples/foo/foo.go	2022-11-14 11:25:15.000000000 +0900
++++ _examples/foo_transformed/foo.go	2022-11-14 11:25:26.000000000 +0900
+@@ -8,14 +8,14 @@
  
  func Foo() error {
  	if err := Bar(); err != nil {
@@ -23,7 +17,7 @@
  	}
  	return nil
  }
-@@ -25,7 +23,7 @@
+@@ -25,7 +25,7 @@
  
  func Multiples() (bool, error) {
  	if err := Bar(); err != nil {
@@ -32,7 +26,7 @@
  	}
  	return true, nil
  }
-@@ -39,7 +37,7 @@
+@@ -39,7 +39,7 @@
  
  func WithSprintf() error {
  	if err := Bar(); err != nil {
@@ -41,7 +35,7 @@
  	}
  	return nil
  }
-@@ -49,28 +47,28 @@
+@@ -49,37 +49,37 @@
  		fmt.Println("hmm")
  		return err
  	}
@@ -75,4 +69,14 @@
  	}
 -	return errors.New("hmm")
 +	return fmt.Errorf("hmm")
+ }
+ 
+ var errSuspend2 = errors.Errorf("suspend %d", 2)
+ 
+ func WithErrorf() error {
+ 	if err := Bar(); err != nil {
+-		return errors.WithStack(errSuspend)
++		return errSuspend
+ 	}
+ 	return errors.Errorf("hmm %d", 2)
  }

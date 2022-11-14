@@ -2,6 +2,8 @@ package internal
 
 import (
 	"fmt"
+
+	"github.com/pkg/errors"
 )
 
 func Foo() error {
@@ -71,4 +73,13 @@ func WithNew() error {
 		return errSuspend
 	}
 	return fmt.Errorf("hmm")
+}
+
+var errSuspend2 = errors.Errorf("suspend %d", 2)
+
+func WithErrorf() error {
+	if err := Bar(); err != nil {
+		return errSuspend
+	}
+	return errors.Errorf("hmm %d", 2)
 }

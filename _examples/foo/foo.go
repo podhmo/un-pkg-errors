@@ -74,3 +74,12 @@ func WithNew() error {
 	}
 	return errors.New("hmm")
 }
+
+var errSuspend2 = errors.Errorf("suspend %d", 2)
+
+func WithErrorf() error {
+	if err := Bar(); err != nil {
+		return errors.WithStack(errSuspend)
+	}
+	return errors.Errorf("hmm %d", 2)
+}
