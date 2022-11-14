@@ -152,15 +152,27 @@ func (s *Scanner) Scan(f *ast.File) {
 
 					switch fun.Sel.Name {
 					case "Wrap", "Wrapf":
-						if ret, ok := stack[len(stack)-2].(*ast.ReturnStmt); ok {
+						switch parent := stack[len(stack)-2].(type) {
+						case *ast.ReturnStmt:
 							set := func(new *ast.CallExpr) {
-								for i, x := range ret.Results {
+								for i, x := range parent.Results {
 									if x == n {
-										ret.Results[i] = new
+										parent.Results[i] = new
 									}
 								}
 							}
 							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
+						case *ast.CallExpr:
+							set := func(new *ast.CallExpr) {
+								for i, x := range parent.Args {
+									if x == n {
+										parent.Args[i] = new
+									}
+								}
+							}
+							target.calls = append(target.calls, &call{name: fun.Sel.Name, expr: n, stack: stack[:], set: set})
+						default:
+							log.Printf("\tWARNING: unexpected type: %T", parent)
 						}
 					}
 				}

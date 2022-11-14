@@ -43,3 +43,11 @@ func WithSprintf() error {
 	}
 	return nil
 }
+
+func WithNewError() error {
+	newXXXError := func(err error) {
+		fmt.Println("hmm")
+		return err
+	}
+	return newXXXError(errors.Wrap(Boo(), "hmm"))
+}
